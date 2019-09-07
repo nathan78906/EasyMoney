@@ -1,6 +1,8 @@
 import requests
 import json
 import datetime
+from messenger import sendText
+from whatsapp import sendToWhatsApp
 
 auth_data = {
     "grant_type"    : "client_credentials",
@@ -87,6 +89,9 @@ for i in range(0, 100):
         send_to_user += "\nSelling: \n"
         send_to_user += selling.rstrip("\n")
 
-    print(send_to_user)
+    if send_to_user:
+        print(send_to_user)
+        # sendText(send_to_user)
+        sendToWhatsApp(send_to_user)
     start_date += datetime.timedelta(days=1)
     end_date += datetime.timedelta(days=1)
