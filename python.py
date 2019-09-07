@@ -43,7 +43,11 @@ start_date = datetime.datetime(2017, 1, 1)
 end_date = datetime.datetime(2017, 1, 2)
 
 
-for i in range(0, 29):
+for i in range(0, 100):
+    print("{} - {}".format(start_date, end_date))
+    user_input = input("Press enter to continue (or q to quit): ")
+    if user_input == 'q':
+        exit()
     request_query = {
                     "where": {
                         "gsid": gsids
@@ -54,7 +58,6 @@ for i in range(0, 29):
 
     request = session.post(url=request_url, json=request_query)
     results = json.loads(request.text)
-    print("{} - {}".format(start_date, end_date))
 
     send_to_user = ""
     buying = ""
@@ -78,10 +81,10 @@ for i in range(0, 29):
             portfolio[stock['gsid']]['score'] = stock['financialReturnsScore']
 
     if buying:
-        send_to_user += "Buying: \n"
+        send_to_user += "\nBuying: \n"
         send_to_user += buying.rstrip("\n")
     if selling:
-        send_to_user += "Selling: \n"
+        send_to_user += "\nSelling: \n"
         send_to_user += selling.rstrip("\n")
 
     print(send_to_user)
