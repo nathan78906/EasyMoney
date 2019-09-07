@@ -1,4 +1,6 @@
 gs-quant==0.8.50
+requests
+python-dotenv
 flask
 gunicorn
 twilio
