@@ -2,3 +2,7 @@
 .idea/
 
 .env
+
+__pycache__/whatsapp.cpython-37.pyc
+
+__pycache__/
