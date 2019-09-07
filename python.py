@@ -30,3 +30,4 @@ request_query = {
 
 request = session.post(url=request_url, json=request_query)
 results = json.loads(request.text)
+import pdb; pdb.set_trace();
