@@ -1,2 +1,4 @@
 gs-quant==0.8.50
 flask
+gunicorn
+twilio
