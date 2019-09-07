@@ -10,22 +10,22 @@ auth_data = {
 }
 
 portfolio = {
-    '213305': {'ticker': 'TSLA', 'score': 0, 'number_bought': 1},
-    '149756': {'ticker': 'NFLX', 'score': 0, 'number_bought': 1},
-    '227284': {'ticker': 'FB', 'score': 0, 'number_bought': 1},
-    '176665': {'ticker': 'EXPE', 'score': 0, 'number_bought': 1},
-    '75573': {'ticker': 'ODP', 'score': 0, 'number_bought': 1},
-    '86196': {'ticker': 'ULTI', 'score': 0, 'number_bought': 1},
-    '25022': {'ticker': 'CMCSA', 'score': 0, 'number_bought': 1},
-    '44644': {'ticker': 'ADP', 'score': 0, 'number_bought': 1},
-    '66384': {'ticker': 'WDC', 'score': 0, 'number_bought': 1},
-    '86356': {'ticker': 'EBAY', 'score': 0, 'number_bought': 1},
-    '161467': {'ticker': 'CRM', 'score': 0, 'number_bought': 1}
+    '213305': {'ticker': 'TSLA', 'name': 'Tesla Inc', 'score': 0, 'number_bought': 1},
+    '149756': {'ticker': 'NFLX', 'name': 'Netflix Inc', 'score': 0, 'number_bought': 1},
+    '227284': {'ticker': 'FB', 'name': 'Facebook Inc-Class A', 'score': 0, 'number_bought': 1},
+    '176665': {'ticker': 'EXPE', 'name': 'Expedia Group Inc', 'score': 0, 'number_bought': 1},
+    '75573': {'ticker': 'ODP', 'name': 'Office Depot Inc', 'score': 0, 'number_bought': 1},
+    '86196': {'ticker': 'ULTI', 'name': 'Ultimate Software Group Inc', 'score': 0, 'number_bought': 1},
+    '25022': {'ticker': 'CMCSA', 'name': 'Comcast Corp-Class A', 'score': 0, 'number_bought': 1},
+    '44644': {'ticker': 'ADP', 'name': 'Automatic Data Processing', 'score': 0, 'number_bought': 1},
+    '66384': {'ticker': 'WDC', 'name': 'Western Digital Corp', 'score': 0, 'number_bought': 1},
+    '86356': {'ticker': 'EBAY', 'name': 'Ebay Inc', 'score': 0, 'number_bought': 1},
+    '161467': {'ticker': 'CRM', 'name': 'Salesforce.com Inc', 'score': 0, 'number_bought': 1}
 }
 gsids = [gsid for gsid in portfolio]
 
-SELL_FACTOR = -0.005
-BUY_FACTOR = 0.005
+SELL_FACTOR = -0.001
+BUY_FACTOR = 0.001
 
 # create session instance
 session = requests.Session()
@@ -56,22 +56,34 @@ for i in range(0, 29):
     results = json.loads(request.text)
     print("{} - {}".format(start_date, end_date))
 
+    send_to_user = ""
+    buying = ""
+    selling = ""
+
     for stock in results['data']:
-        net = stock['integratedScore'] - portfolio[stock['gsid']]['score']
+        net = stock['financialReturnsScore'] - portfolio[stock['gsid']]['score']
         if portfolio[stock['gsid']]['score'] == 0:
-            portfolio[stock['gsid']]['score'] = stock['integratedScore']
+            portfolio[stock['gsid']]['score'] = stock['financialReturnsScore']
         elif net > BUY_FACTOR:
             if portfolio[stock['gsid']]['number_bought'] < 1:
-                print("Buying: {}".format(portfolio[stock['gsid']]['ticker']))
-                portfolio[stock['gsid']]['score'] = stock['integratedScore']
+                buying += "{} ({})\n".format(portfolio[stock['gsid']]['ticker'], portfolio[stock['gsid']]['name'])
+                portfolio[stock['gsid']]['score'] = stock['financialReturnsScore']
                 portfolio[stock['gsid']]['number_bought'] += 1
         elif net < SELL_FACTOR:
             if portfolio[stock['gsid']]['number_bought'] > 0:
-                print("Selling: {}".format(portfolio[stock['gsid']]['ticker']))
-                portfolio[stock['gsid']]['score'] = stock['integratedScore']
+                selling += "{} ({})\n".format(portfolio[stock['gsid']]['ticker'], portfolio[stock['gsid']]['name'])
+                portfolio[stock['gsid']]['score'] = stock['financialReturnsScore']
                 portfolio[stock['gsid']]['number_bought'] -= 1
         else:
-            portfolio[stock['gsid']]['score'] = stock['integratedScore']
+            portfolio[stock['gsid']]['score'] = stock['financialReturnsScore']
 
+    if buying:
+        send_to_user += "Buying: \n"
+        send_to_user += buying.rstrip("\n")
+    if selling:
+        send_to_user += "Selling: \n"
+        send_to_user += selling.rstrip("\n")
+
+    print(send_to_user)
     start_date += datetime.timedelta(days=1)
     end_date += datetime.timedelta(days=1)
